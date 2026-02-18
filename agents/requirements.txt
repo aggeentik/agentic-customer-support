@@ -1,0 +1,18 @@
+# Core — required by AgentCore Runtime
+bedrock-agentcore
+
+# Strands Agents SDK + community tools (otel extra provides native OTEL tracing)
+strands-agents[otel]
+strands-agents-tools
+
+# MCP client (for Gateway / streamable HTTP transport)
+mcp
+
+# HTTP client — token fetching for AgentCore Gateway OAuth
+httpx
+
+# Data validation — CRM request/response schema
+pydantic
+
+# AWS SDK — Bedrock Guardrails (GuardrailHook)
+boto3

@@ -66,3 +66,35 @@ variable "data_pdf_path" {
   type        = string
   default     = "../data/2022-bmw-5-series.pdf"
 }
+
+# ---------------------------------------------------------------------------
+# AgentCore Runtime variables
+# ---------------------------------------------------------------------------
+
+variable "agent_image_tag" {
+  description = "Docker image tag pushed to ECR and used by the AgentCore Runtime"
+  type        = string
+  default     = "latest"
+}
+
+variable "network_mode" {
+  description = "Network mode for the AgentCore Runtime (PUBLIC or PRIVATE)"
+  type        = string
+  default     = "PUBLIC"
+
+  validation {
+    condition     = contains(["PUBLIC", "PRIVATE"], var.network_mode)
+    error_message = "network_mode must be PUBLIC or PRIVATE."
+  }
+}
+
+variable "log_level" {
+  description = "LOG_LEVEL environment variable injected into the agent container"
+  type        = string
+  default     = "INFO"
+
+  validation {
+    condition     = contains(["DEBUG", "INFO", "WARNING", "ERROR"], var.log_level)
+    error_message = "log_level must be one of DEBUG, INFO, WARNING, ERROR."
+  }
+}

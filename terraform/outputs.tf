@@ -53,3 +53,52 @@ output "ingestion_command" {
       --region ${var.aws_region}
   EOT
 }
+
+# ---------------------------------------------------------------------------
+# AgentCore Runtime outputs
+# ---------------------------------------------------------------------------
+
+output "agentcore_runtime_id" {
+  description = "ID of the AgentCore Runtime"
+  value       = aws_bedrockagentcore_agent_runtime.supervisor.agent_runtime_id
+}
+
+output "agentcore_runtime_arn" {
+  description = "ARN of the AgentCore Runtime"
+  value       = aws_bedrockagentcore_agent_runtime.supervisor.agent_runtime_arn
+}
+
+output "agentcore_runtime_version" {
+  description = "Version of the AgentCore Runtime"
+  value       = aws_bedrockagentcore_agent_runtime.supervisor.agent_runtime_version
+}
+
+output "ecr_supervisor_repository_url" {
+  description = "ECR repository URL for the supervisor agent image"
+  value       = aws_ecr_repository.supervisor_agent.repository_url
+}
+
+output "guardrail_id" {
+  description = "ID of the Bedrock Guardrail applied to the supervisor agent"
+  value       = aws_bedrock_guardrail.supervisor.guardrail_id
+}
+
+output "guardrail_arn" {
+  description = "ARN of the Bedrock Guardrail"
+  value       = aws_bedrock_guardrail.supervisor.guardrail_arn
+}
+
+output "codebuild_supervisor_project_name" {
+  description = "Name of the CodeBuild project that builds the supervisor agent image"
+  value       = aws_codebuild_project.supervisor_agent.name
+}
+
+output "agent_invoke_command" {
+  description = "agentcore CLI command to invoke the deployed supervisor agent"
+  value       = <<-EOT
+    agentcore invoke \
+      --agent-runtime-id ${aws_bedrockagentcore_agent_runtime.supervisor.agent_runtime_id} \
+      --region ${var.aws_region} \
+      '{"customer_query": "How does adaptive cruise control work?", "metadata": {"model": "BMW 5 Series", "year": "2022"}}'
+  EOT
+}
