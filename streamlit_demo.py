@@ -27,8 +27,7 @@ import streamlit as st
 # ---------------------------------------------------------------------------
 
 st.set_page_config(
-    page_title="BMW Customer Support — AI Assistant Demo",
-    page_icon="🚗",
+    page_title="Customer Support — AI Assistant Demo",
     layout="wide",
 )
 
@@ -68,7 +67,7 @@ with st.sidebar:
 # Main — CRM form
 # ---------------------------------------------------------------------------
 
-st.title("🚗 BMW Customer Support — AI Response Generator")
+st.title("Customer Support — AI Response Generator")
 st.caption(
     "Human agents use this tool to generate a suggested reply. "
     "The AI response is always reviewed before sending to the customer."

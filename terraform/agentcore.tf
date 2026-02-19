@@ -335,6 +335,11 @@ resource "aws_iam_role_policy_attachment" "agentcore_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/BedrockAgentCoreFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "agentcore_marketplace_subscriptions" {
+  role       = aws_iam_role.agentcore_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSMarketplaceManageSubscriptions"
+}
+
 resource "aws_iam_role_policy" "agentcore_execution" {
   name = "${local.agent_prefix}-agentcore-exec-policy"
   role = aws_iam_role.agentcore_execution.id

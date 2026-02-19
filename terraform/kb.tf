@@ -62,7 +62,7 @@ resource "aws_s3_object" "bmw_user_guide" {
 # ---------------------------------------------------------------------------
 
 resource "aws_secretsmanager_secret" "pinecone_api_key" {
-  name                    = "${local.name_prefix}/pinecone-api-key"
+  name                    = "${local.name_prefix}/pinecone-api-key-latest"
   description             = "Pinecone API key for Bedrock Knowledge Base ${var.kb_name}"
   recovery_window_in_days = 7
 }
