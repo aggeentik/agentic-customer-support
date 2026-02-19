@@ -534,9 +534,10 @@ resource "aws_bedrockagentcore_agent_runtime" "supervisor" {
   }
 
   environment_variables = {
-    AWS_REGION            = var.aws_region
-    AWS_DEFAULT_REGION    = var.aws_region
-    KNOWLEDGE_BASE_ID     = aws_bedrockagent_knowledge_base.this.id
+    AWS_REGION                = var.aws_region
+    AWS_DEFAULT_REGION        = var.aws_region
+    KNOWLEDGE_BASE_ID         = aws_bedrockagent_knowledge_base.this.id
+    STRANDS_KNOWLEDGE_BASE_ID = aws_bedrockagent_knowledge_base.this.id
     BEDROCK_GUARDRAIL_ID  = aws_bedrock_guardrail.supervisor.guardrail_id
     BEDROCK_GUARDRAIL_VER = aws_bedrock_guardrail_version.supervisor.version
     LOG_LEVEL             = var.log_level
