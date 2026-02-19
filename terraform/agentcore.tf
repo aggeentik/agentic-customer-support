@@ -538,12 +538,17 @@ resource "aws_bedrockagentcore_agent_runtime" "supervisor" {
     AWS_DEFAULT_REGION        = var.aws_region
     KNOWLEDGE_BASE_ID         = aws_bedrockagent_knowledge_base.this.id
     STRANDS_KNOWLEDGE_BASE_ID = aws_bedrockagent_knowledge_base.this.id
-    BEDROCK_GUARDRAIL_ID  = aws_bedrock_guardrail.supervisor.guardrail_id
-    BEDROCK_GUARDRAIL_VER = aws_bedrock_guardrail_version.supervisor.version
-    LOG_LEVEL             = var.log_level
-    # Strands native OTEL — points to the CloudWatch OTLP endpoint.
-    # SigV4 auth is handled automatically via the container's IAM role.
+    BEDROCK_GUARDRAIL_ID      = aws_bedrock_guardrail.supervisor.guardrail_id
+    BEDROCK_GUARDRAIL_VER     = aws_bedrock_guardrail_version.supervisor.version
+    LOG_LEVEL                 = var.log_level
+
+    # ---------------------------------------------------------------------------
+    # Strands native OTEL — no ADOT needed; strands-agents[otel] bundles the SDK.
+    # Traces go to X-Ray via OTLP; visible in CloudWatch → GenAI Observability.
+    # Prerequisite: enable CloudWatch Transaction Search once in the console.
+    # ---------------------------------------------------------------------------
     OTEL_EXPORTER_OTLP_ENDPOINT = "https://xray.${var.aws_region}.amazonaws.com"
+    OTEL_RESOURCE_ATTRIBUTES    = "service.name=${local.agent_prefix}-supervisor"
   }
 
   depends_on = [

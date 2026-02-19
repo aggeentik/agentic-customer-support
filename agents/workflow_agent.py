@@ -179,6 +179,7 @@ def workflow_agent(query: str, context: str) -> str:
         system_prompt=WORKFLOW_PROMPT,
         tools=[gateway_client],
         callback_handler=None,
+        trace_attributes={"gen_ai.agent.name": "workflow"},
     )
 
     response = agent(prompt)

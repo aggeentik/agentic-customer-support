@@ -184,6 +184,7 @@ def informational_agent(query: str, context: str) -> str:
         system_prompt=INFO_PROMPT,
         tools=[retrieve_kb],
         callback_handler=None,
+        trace_attributes={"gen_ai.agent.name": "informational"},
     )
 
     response = agent(prompt)

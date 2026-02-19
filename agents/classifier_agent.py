@@ -86,6 +86,7 @@ def classifier_agent(query: str, context: str) -> str:
         model=HAIKU,
         system_prompt=CLASSIFIER_PROMPT,
         callback_handler=None,  # suppress intermediate stdout
+        trace_attributes={"gen_ai.agent.name": "classifier"},
     )
 
     response = agent(f"Context:\n{context}\n\nCustomer query:\n{query}")

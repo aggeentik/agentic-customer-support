@@ -197,6 +197,11 @@ def invoke(payload: dict, context) -> dict:
         tools=[classifier_agent, informational_agent, workflow_agent],
         hooks=_build_hooks(),
         callback_handler=None,  # suppress intermediate stdout; CRM only sees the final JSON
+        trace_attributes={
+            "gen_ai.agent.name": "supervisor",
+            "session.id": session_id,
+            "customer.id": customer_id,
+        },
     )
 
     raw_result = supervisor(

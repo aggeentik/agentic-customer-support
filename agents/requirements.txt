@@ -16,3 +16,7 @@ pydantic
 
 # AWS SDK — Bedrock Guardrails (GuardrailHook)
 boto3
+
+# AWS Distro for OpenTelemetry — required for CloudWatch GenAI Observability dashboard
+# See: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
+aws-opentelemetry-distro>=0.10.0
