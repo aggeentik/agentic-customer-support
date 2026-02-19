@@ -1,0 +1,66 @@
+flowchart TD
+    CRM["🧑‍💼 CRM / Human Agent<br/>POST /api/v1/process-request<br/>{customer_query, metadata, history}"]
+
+    subgraph Runtime["AgentCore Runtime  •  ARM64 container  •  opentelemetry-instrument"]
+        direction TB
+
+        SA["**Supervisor Agent**<br/>Claude Sonnet 4.5<br/>trace: session.id · customer.id"]
+
+        GH["GuardrailHook<br/>AfterToolCallEvent<br/>screens every sub-agent result"]
+
+        subgraph Tools["Agents-as-Tools"]
+            direction LR
+            CA["**Classifier Agent**<br/>Claude Haiku 4.5<br/>no external tools<br/>returns: INFORMATIONAL<br/>or BUSINESS_WORKFLOW"]
+            IA["**Informational Agent**<br/>Claude Sonnet 4.5<br/>tool: retrieve_kb"]
+            WA["**Workflow Agent**<br/>Claude Haiku 4.5<br/>tool: MCPClient"]
+        end
+
+        RKB["retrieve_kb<br/>boto3 bedrock-agent-runtime.retrieve()"]
+        TC["_TokenCache<br/>thread-safe · 5-min buffer"]
+        MCPC["MCPClient<br/>streamablehttp_client<br/>Bearer auth"]
+    end
+
+    subgraph AWS["AWS"]
+        BG["Bedrock Guardrails<br/>PII redaction · denied topics"]
+        KB["Bedrock Knowledge Base<br/>Pinecone serverless (cosine)"]
+        S3["S3<br/>2022-bmw-5-series.pdf"]
+        COG["Cognito<br/>client_credentials grant"]
+        GW["AgentCore Gateway<br/>MCP protocol<br/>dynamic tool discovery"]
+        LM["Lambda / Step Functions<br/>Service · Recall · Test Drive<br/>Showroom appointments"]
+        CW["CloudWatch<br/>GenAI Observability<br/>X-Ray / ADOT"]
+    end
+
+    CRM -->|"① JSON payload"| SA
+
+    SA -->|"② classify intent"| CA
+    CA -->|"INFORMATIONAL / BUSINESS_WORKFLOW"| SA
+
+    SA -->|"③a if INFORMATIONAL"| IA
+    IA --> RKB
+    RKB -->|"retrieve(knowledgeBaseId, query)"| KB
+    KB <-->|"vector search"| S3
+    KB -->|"chunks · scores · s3Location.uri"| RKB
+    RKB -->|"JSON {results:[{uri,text,score}]}"| IA
+    IA -->|"cited answer"| SA
+
+    SA -->|"③b if BUSINESS_WORKFLOW"| WA
+    WA --> TC
+    TC -->|"POST client_credentials"| COG
+    COG -->|"access_token + expires_in"| TC
+    TC --> MCPC
+    MCPC -->|"MCP Streamable HTTP"| GW
+    GW -->|"invoke Lambda/SF tool"| LM
+    LM -->|"workflow_id · status"| GW
+    GW -->|"MCP tool result"| WA
+    WA -->|"JSON {action_taken,status,workflow_id}"| SA
+
+    GH -. "intercepts every tool call result" .-> BG
+    BG -. "PASS / BLOCKED" .-> GH
+    GH -. "modified or original tool result" .-> SA
+
+    SA -->|"④ structured JSON response"| CRM
+
+    SA -. "OTEL spans" .-> CW
+    CA -. "OTEL spans" .-> CW
+    IA -. "OTEL spans" .-> CW
+    WA -. "OTEL spans" .-> CW
